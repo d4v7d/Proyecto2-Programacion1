@@ -1,0 +1,622 @@
+/**
+ * Esta clase crea la hoja de "excel y sus operaciones si son llamadas".
+ */
+   class Hoja do
+    /**
+     * Variable para crear el largo de la matriz.
+     */
+      int row 
+    /**
+     * Variable para crear el ancho de la matriz.
+     */
+      int col 
+    /**
+     * La matriz que contiene todas las celdas.
+     */
+      String[][] hojaDeCalculo 
+    /**
+     * Matriz con los numeradores.
+     */
+      String[][] celda1 
+    /**
+     * Matriz con los denominadores.
+     */
+      String[][] celda2 
+    /**
+     * para almacenar un conjunto.
+     */
+      String[] conjunto 
+    /**
+     * para encontrar la posicione Row de donde se quiera el resultado.
+     */
+      int celRow 
+    /**
+     * para encontrar la posicione Col de donde se quiera el resultado.
+     */
+      int celCol 
+    /**
+     * guarda el numerador del resultado de la suma.
+     */
+      int suma1 
+    /**
+     * guarda el denominador del resultado de la suma.
+     */
+      int suma2 
+  
+   
+  
+    Hoja() do
+      this.row  := 0 
+      this.col  := 0 
+    end
+  
+   
+  
+    /**
+     * Este metodo crea una matriz con los valores
+     * dados y crea 2 matrices,(denominador y numerador).
+     */
+  
+      void leer(final int nrow, final int ncol, final String[][] matriz) do
+  
+      row  := nrow 
+      col  := ncol 
+      hojaDeCalculo  := matriz 
+  
+      //la celda1 es la que va a contener
+      // los números de la izquierda (numerador).
+  
+      String[][] celdas1  := new String[this.row][this.col] 
+      celda1  := celdas1 
+  
+      //la celda2 es la que va a contener
+      // los números de la derecha (denominador).
+  
+      String[][] celdas2  := new String[this.row][this.col] 
+      celda2  := celdas2 
+  
+      //inserta los valores en su respectiva matriz.
+      for (int i  := 0  i < hojaDeCalculo.length  i++) do
+        for (int j  := 0  j < hojaDeCalculo[i].length  j++) do
+          String[] dividirHoja  := hojaDeCalculo[i][j].split("/") 
+          celda1[i][j]  := dividirHoja[0] 
+          celda2[i][j]  := dividirHoja[1] 
+  
+        end
+      end
+  
+    end
+  
+   
+  
+    /**
+     * Este método crea la dirección donde se
+     * quiere guardar a la hora de hacer una operación.
+     *
+     */
+  
+    void cel(final String casilla) do
+  
+      celRow  := 0 
+      celCol  := 0 
+  
+      String[] a  := casilla.split("") 
+  
+      // Almacena la dirección dada en los valores siguientes.
+      // Se reinicia cada vez que es llamado.
+  
+      celRow  := Integer.parseInt(a[1]) - 1 
+      celCol  := letras(a[0]) 
+  
+    end
+  
+   
+  
+    /**
+     * Este método crea un conjunto.
+     *
+     *
+     */
+  
+    void conjunto(final String casilla) do
+  
+      //Almacena el conjunto dado en la lista "conjunto".
+      //El detalle es que se reinicia cada vez que es llamado.
+      String[] a  := casilla.split(",") 
+      conjunto  := a 
+  
+    end
+  
+   
+  
+    /**
+     * Este método suma las fracciones de las posiciones dadas (filas o columnas).
+     *
+     */
+  
+    void suma(final String casillas) do
+  
+      suma1  := 0 
+      suma2  := 0 
+      int sumanum  := 0 
+      int sumadev  := 0 
+  
+      String[] a  := casillas.split(":") 
+      String[] casilla1  := a[0].split("") 
+      String[] casilla2  := a[1].split("") 
+  
+      //si las letras son iguales se trabajan columnas
+      if (casilla2[0]  :=(casilla1[0])) do
+  
+        int inicio  := Integer.parseInt(casilla1[1]) 
+        int fin  := Integer.parseInt(casilla2[1]) 
+        int columna  := letras(casilla1[0]) 
+        int num1  := Integer.parseInt(celda1[inicio - 1][columna]) 
+        int dev1  := Integer.parseInt(celda2[inicio - 1][columna]) 
+  
+        for (int i  := inicio  i < := fin - 1  i++) do
+  
+          int num2  := Integer.parseInt(celda1[i][columna]) 
+          int dev2  := Integer.parseInt(celda2[i][columna]) 
+          int tmp 
+  
+          //si los denominadores son iguales solo se suman los numeradores.
+          if (dev1  := := dev2) do
+            sumanum  := num1 + num2 
+            sumadev  := dev1 
+  
+            num1  := sumanum 
+            dev1  := sumadev 
+          end
+  
+          // si los denominadores son diferentes cambia el método.
+          if (dev1 ! := dev2) do
+  
+            //si los denominadores tienen mínimo común divisor.
+            if (dev1 % dev2  := := 0) do
+              tmp  := dev1 / dev2 
+              sumanum  := num1 + (num2 * tmp) 
+              sumadev  := dev1 
+  
+              num1  := sumanum 
+              dev1  := sumadev 
+            end else do
+              if (dev2 % dev1  := := 0) do
+                tmp  := dev2 / dev1 
+                sumanum  := num1 + (num2 * tmp) 
+                sumadev  := dev2 
+  
+                num1  := sumanum 
+                dev1  := sumadev 
+              end else do
+                // si no tienen mcd se hace el método tradicional.
+                tmp  := dev1 
+                dev1  := dev2 * dev1 
+                num1  := num1 * dev2 
+                num2  := num2 * tmp 
+  
+                sumanum  := num1 + num2 
+                sumadev  := dev1 
+  
+                num1  := sumanum 
+                dev1  := sumadev 
+              end
+            end
+          end
+        end
+  
+        //los resultados de las sumas se guardan.
+        suma1  := sumanum 
+        suma2  := sumadev 
+  
+        //se ponen en sus respectivas celdas.
+        celda1[celRow][celCol]  := "" + suma1 
+        celda2[celRow][celCol]  := "" + suma2 
+  
+      end
+      //si los números son iguales se trabajan filas
+      if (casilla2[1]  :=(casilla1[1])) do
+  
+        int fila  := Integer.parseInt(casilla1[1]) 
+        int inicio  := letras(casilla1[0]) 
+        int fin  := letras(casilla2[0]) 
+  
+        int num1  := Integer.parseInt(celda1[fila - 1][inicio]) 
+        int dev1  := Integer.parseInt(celda2[fila - 1][inicio]) 
+  
+        for (int i  := inicio + 1  i < := fin  i++) do
+          int num2  := Integer.parseInt(celda1[fila - 1][i]) 
+          int dev2  := Integer.parseInt(celda2[fila - 1][i]) 
+  
+          //si los denominadores son iguales solo se suman los numeradores.
+          if (dev1  := := dev2) do
+  
+            sumanum  := num1 + num2 
+            sumadev  := dev1 
+  
+            num1  := sumanum 
+            dev1  := sumadev 
+          end
+  
+          // si los denominadores son diferentes cambia el método.
+          if (dev1 ! := dev2) do
+  
+            //si los denominadores tienen mínimo común divisor.
+            if (dev1 % dev2  := := 0) do
+              int tmp  := dev1 / dev2 
+              sumanum  := num1 + num2 * tmp 
+              sumadev  := dev1 
+  
+              num1  := sumanum 
+              dev1  := sumadev 
+            end else do
+              if (dev2 % dev1  := := 0) do
+                int tmp  := dev2 / dev1 
+                sumanum  := num1 + num2 * tmp 
+                sumadev  := dev2 
+  
+                num1  := sumanum 
+                dev1  := sumadev 
+              end else do
+  
+                // si no tienen mcd se hace el método tradicional.
+                int tmp  := dev1 
+                dev1  := dev2 * dev1 
+                num1  := num1 * dev2 
+                num2  := num2 * tmp 
+  
+                sumanum  := num1 + num2 
+                sumadev  := dev1 
+  
+                num1  := sumanum 
+                dev1  := sumadev 
+              end
+            end
+          end
+        end
+  
+        //los resultados de las sumas se guardan.
+        suma1  := sumanum 
+        suma2  := sumadev 
+  
+        //se ponen en sus respectivas celdas.
+        celda1[celRow][celCol]  := "" + suma1 
+        celda2[celRow][celCol]  := "" + suma2 
+      end
+    end
+  
+   
+  
+    /**
+     * Este método suma las casillas del conjunto.
+     */
+  
+    void sumaConjunto() do
+  
+      String nombre  := conjunto[0] 
+      suma1  := 0 
+      suma2  := 0 
+      int sumanum  := 0 
+      int sumadev  := 0 
+  
+      String[] b  := conjunto[1].split("") 
+  
+      int num1  :=
+              Integer.parseInt(celda1[letras(b[0])][Integer.parseInt(b[1]) - 1]) 
+      int dev1  :=
+              Integer.parseInt(celda2[letras(b[0])][Integer.parseInt(b[1]) - 1]) 
+  
+      for (int i  := 2  i < conjunto.length  i++) do
+  
+        String[] c  := conjunto[i].split("") 
+        int num2  :=
+            Integer.parseInt(celda1[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+        int dev2  :=
+            Integer.parseInt(celda2[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+  
+        //si los denominadores son iguales solo se suman los numeradores.
+        if (dev1  := := dev2) do
+  
+          sumanum  := num1 + num2 
+          sumadev  := dev1 
+  
+          num1  := sumanum 
+          dev1  := sumadev 
+        end
+  
+        // si los denominadores son diferentes cambia el método.
+        if (dev1 ! := dev2) do
+  
+          //si los denominadores tienen mínimo común divisor.
+          if (dev1 % dev2  := := 0) do
+            int tmp  := dev1 / dev2 
+            sumanum  := num1 + num2 * tmp 
+            sumadev  := dev1 
+  
+            num1  := sumanum 
+            dev1  := sumadev 
+          end else do
+            if (dev2 % dev1  := := 0) do
+              int tmp  := dev2 / dev1 
+              sumanum  := num1 + num2 * tmp 
+              sumadev  := dev2 
+  
+              num1  := sumanum 
+              dev1  := sumadev 
+            end else do
+  
+              // si no tienen mcd se hace el método tradicional.
+              int tmp  := dev1 
+              dev1  := dev2 * dev1 
+              num1  := num1 * dev2 
+              num2  := num2 * tmp 
+  
+              sumanum  := num1 + num2 
+              sumadev  := dev1 
+  
+              num1  := sumanum 
+              dev1  := sumadev 
+            end
+          end
+        end
+      end
+  
+      //los resultados de las sumas se guardan.
+      suma1  := sumanum 
+      suma2  := sumadev 
+  
+      //se ponen en sus respectivas celdas.
+      celda1[celRow][celCol]  := "" + suma1 
+      celda2[celRow][celCol]  := "" + suma2 
+  
+    end
+  
+  
+    /**
+     * Este método multiplica las fracciones
+     * de las posiciones dadas (filas o columnas).
+     *
+     */
+    void mult(final String casillas) do
+  
+      int multiplicacion1  := 0 
+      int multiplicacion2  := 0 
+  
+      String[] a  := casillas.split(":") 
+      String[] casilla1  := a[0].split("") 
+      String[] casilla2  := a[1].split("") 
+      int mult  := 1 
+  
+      //si las letras son iguales se trabajan columnas
+      if (casilla2[0]  :=(casilla1[0])) do
+  
+        int inicio  := Integer.parseInt(casilla1[1]) 
+        int fin  := Integer.parseInt(casilla2[1]) 
+  
+        int columna  := letras(casilla1[0]) 
+  
+        //multiplica los numeradores.
+        for (int i  := inicio - 1  i < := fin - 1  i++) do
+          int num  := Integer.parseInt(celda1[i][columna]) 
+          mult * := num 
+  
+        end
+        multiplicacion1  := mult 
+  
+        mult  := 1 
+  
+        //multiplica los denominadores.
+        for (int i  := inicio - 1  i < := fin - 1  i++) do
+          int num  := Integer.parseInt(celda2[i][columna]) 
+          mult * := num 
+  
+        end
+  
+        multiplicacion2  := mult 
+  
+        //Se guardan los valores en sus respectivas celdas.
+        celda1[celRow][celCol]  := "" + multiplicacion1 
+        celda2[celRow][celCol]  := "" + multiplicacion2 
+  
+      end
+      //si los números son iguales se trabajan filas
+      if (casilla2[1]  :=(casilla1[1])) do
+  
+        int fila  := Integer.parseInt(casilla1[1]) 
+  
+        int inicio  := letras(casilla1[0]) 
+  
+        int fin  := letras(casilla2[0]) 
+  
+        //multiplica los numeradores.
+        for (int i  := inicio  i < := fin  i++) do
+          int num  := Integer.parseInt(celda1[fila - 1][i]) 
+          mult * := num 
+        end
+  
+        multiplicacion1  := mult 
+  
+        mult  := 1 
+  
+        //multiplica los denominadores.
+        for (int i  := inicio  i < := fin  i++) do
+          int num  := Integer.parseInt(celda2[fila - 1][i]) 
+          mult * := num 
+        end
+  
+        multiplicacion2  := mult 
+  
+        //Se guardan los valores en sus respectivas celdas.
+        celda1[celRow][celCol]  := "" + multiplicacion1 
+        celda2[celRow][celCol]  := "" + multiplicacion2 
+  
+      end
+  
+    end
+  
+   
+  
+    /**
+     * multiplica las casillas del conjunto dado.
+     */
+    void multConjunto() do
+  
+      String nombre  := conjunto[0] 
+  
+      int multiplicacion1  := 1 
+      int multiplicacion2  := 1 
+      int multnum  := 1 
+      int multdev  := 1 
+  
+      String[] b  := conjunto[1].split("") 
+  
+      int num1  :=
+              Integer.parseInt(celda1[letras(b[0])][Integer.parseInt(b[1]) - 1]) 
+      int dev1  :=
+              Integer.parseInt(celda2[letras(b[0])][Integer.parseInt(b[1]) - 1]) 
+  
+      //multiplica los numeradores.
+      for (int i  := 2  i < conjunto.length  i++) do
+        String[] c  := conjunto[i].split("") 
+        for (int i = 2  i < conjunto.length  i++)  do
+            String[] c = conjunto[i].split("") 
+            int num2 =
+                    Integer.parseInt(celda1[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+                   Integer.parseInt(celda1[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+            int dev2 =
+                    Integer.parseInt(celda2[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+                   Integer.parseInt(celda2[letras(c[0])][Integer.parseInt(c[1]) - 1]) 
+      
+            multnum = num1 * num2 
+            multdev = dev1 * dev2 
+                minimo = min2 
+                min = min2 
+               end
+      
+             end
+      
+            //busca el resultado menor y lo compara
+                maximo = max2 
+                max = max2 
+               end
+      
+             end
+      
+            //busca el resultado mayor y lo compara
+                celda2[celRow][celCol] = "" + num 
+      
+               end
+      
+             end
+      
+           end
+          //si los números son iguales se trabajan filas
+          if (casilla2[1]  :=(casilla1[1]))  do
+      
+              if (max2 > max)  do
+      
+                maximo = max2 
+                max = max2 
+               end
+      
+             end
+      
+            //busca el resultado mayor y lo compara
+            // con las fracciones para encontrar la posición.
+            for (int i = inicio  i <= fin  i++)  do
+      
+              int div = Integer.parseInt(celda1[fila - 1][i]) 
+              int num = Integer.parseInt(celda2[fila - 1][i]) 
+      
+              double max2 = div / num 
+      
+              if (max2 == maximo)  do
+      
+                celda1[celRow][celCol] = "" + div 
+                celda2[celRow][celCol] = "" + num 
+      
+               end
+      
+             end
+           end
+         end
+        
+        void imprimir()  do
+      
+          print() 
+          simplificar() 
+      
+          for (int i = 0  i < this.row  i++)  do
+      
+            print("  "+(i + 1) + "|") 
+            for (int j = 0  j < this.col  j++)  do
+              int num = Integer.parseInt(celda1[i][j]) 
+              int dev = Integer.parseInt(celda2[i][j]) 
+              hojaDeCalculo[i][j] = num + "/" + dev + " " 
+             end
+           end
+      
+          int distancia = 0 
+      
+          for (int i = 0  i < this.row  i++)  do
+            for (int j = 0  j < this.col  j++)  do
+      
+              String a = hojaDeCalculo[i][j] 
+              if (a.length() > distancia)  do
+                distancia = a.length() 
+               end
+      
+              print("  " + num) 
+              print("/") 
+              print("" + dev) 
+             end
+            print("") 
+           end
+      
+          print(distancia) 
+      
+          print("   |") 
+      
+          for (int i = 0  i < col  i++)  do
+      
+            for (int j = 0  j < distancia - 1  j++)  do
+              print(" ") 
+             end
+            print(num(i)) 
+            print(" ") 
+           end
+      
+          print() 
+          print("---+") 
+      
+          for (int i = 0  i < col  i++)  do
+      
+            for (int j = 0  j < distancia  j++)  do
+              print("-") 
+             end
+            print(" ") 
+           end
+      
+          print() 
+      
+      
+          for (int i = 0  i < row  i++)  do
+            print("  " + (i + 1) + "|") 
+            for (int j = 0  j < col  j++)  do
+              print(" ") 
+      
+              int dis = distancia - (hojaDeCalculo[i][j].length()) 
+              for (int k = 0  k < dis  k++)  do
+                print(" ") 
+      
+               end
+              print(hojaDeCalculo[i][j]) 
+             end
+            print(" ") 
+           end
+      
+          print() 
+      
+         end
+      
+  

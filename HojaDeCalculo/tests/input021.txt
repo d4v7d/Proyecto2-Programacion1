@@ -1,0 +1,15 @@
+3 6
+
+03/02, 01/05, 02/04, 04/03, 05/01, 03/02
+02/05, 02/03, 03/05, 04/04, 05/02, 06/05
+05/04, 02/02, 04/06, 02/05, 05/03, 03/08
+
+>=CEL(F2)
+>=CONJUNTO(conj1,A1,B2,C3)
+>=SUMA(conj1)
+>=IMPRIMIR(conj1)
+>=CEL(F3)
+>=CONJUNTO(conj2,A1,A2,A3)
+>=MULT(conj2)
+>=IMPRIMIR(conj2)
+>=IMPRIMIR()

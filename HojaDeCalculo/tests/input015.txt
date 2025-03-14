@@ -1,0 +1,19 @@
+4 4
+
+ 999/1,  999/1,  999/1, 00/01
+ 1/999,  1/999,  1/999, 00/01
+-999/1, -999/1, -999/1, 00/01
+1/-999, 1/-999, 1/-999, 00/01
+
+>=CEL(D1)
+>=MULT(A1:C1)
+>=CEL(D2)
+>=MULT(A2:C2)
+>=CEL(D3)
+>=MULT(A3:C3)
+>=CEL(D4)
+>=MULT(A4:C4)
+>=CONJUNTO(conjunto1, D1, D2, D3, D4)
+>=CONJUNTO(conjunto2, A4, B4, C4)
+>=IMPRIMIR(conjunto2)
+>=IMPRIMIR(conjunto1)
